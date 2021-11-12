@@ -39,7 +39,7 @@
       <el-form-item label="商品货号：">
         <el-input v-model="ruleForm.productSn"></el-input>
       </el-form-item>
-      <el-form-item label="商品售价：">
+      <el-form-item label="商品售价：" prop="price">
         <el-input v-model="ruleForm.price"></el-input>
       </el-form-item>
       <el-form-item label="市场价：">
@@ -110,6 +110,7 @@ export default {
           { min: 2, max: 140, message: "长度在 2 到 140 个字符", trigger: "blur" },
         ],
         subTitle: [{ required: true, message: "请输入商品副标题", trigger: "blur" }],
+        price: [{ required: true, message: "请输入商品价格", trigger: "blur" }],
         productCategoryCode: [
           { required: true, message: "请选择商品分类", trigger: "blur" },
         ],

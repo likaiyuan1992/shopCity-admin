@@ -54,7 +54,7 @@ export default {
       dialogImageUrl: null,
       useOss: false, //使用oss->true;使用MinIO->false
       ossUploadUrl: "http://macro-oss.oss-cn-shenzhen.aliyuncs.com",
-      minioUploadUrl: "http://localhost:3002/admin/upload",
+      minioUploadUrl: process.env.BASE_API + "/admin/upload",
     };
   },
   computed: {
@@ -77,6 +77,11 @@ export default {
       this.$emit("changeImg", this.fileList);
     },
     handleRemove(file, fileList) {
+      for (let i = 0; i < this.fileList.length; i++) {
+        if (this.fileList[i].url === file.url) {
+          this.fileList.splice(i, 1);
+        }
+      }
       this.emitInput();
     },
     handlePreview(file) {
@@ -108,9 +113,8 @@ export default {
     },
     handleUploadSuccess(res, file) {
       // let url = this.dataObj.host + "/" + this.dataObj.dir + "/" + file.filename;
-      let url = "http://localhost:3002/img?url=" + res.filename;
+      let url = res.filename;
       this.fileList.push({ url: url, uid: file.uid, name: file.name });
-      console.log(this.fileList);
       this.emitInput();
     },
     handleExceed(files, fileList) {

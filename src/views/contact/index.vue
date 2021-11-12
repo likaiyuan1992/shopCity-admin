@@ -25,36 +25,19 @@
         <el-form :inline="true" :model="listQuery" size="small" label-width="140px">
           <el-form-item label="输入搜索：">
             <el-input
-              v-model="listQuery.orderId"
+              v-model="listQuery.Name"
               class="input-width"
-              placeholder="订单编号"
+              placeholder="姓名"
               clearable
             ></el-input>
           </el-form-item>
-          <el-form-item label="收货人邮箱：">
+          <el-form-item label="邮箱：">
             <el-input
-              v-model="listQuery.EmailAddress"
+              v-model="listQuery.Email"
               class="input-width"
-              placeholder="收货人邮箱"
+              placeholder="邮箱"
               clearable
             ></el-input>
-          </el-form-item>
-
-          <el-form-item label="订单状态：">
-            <el-select
-              v-model="listQuery.status"
-              class="input-width"
-              placeholder="全部"
-              clearable
-            >
-              <el-option
-                v-for="item in statusOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              >
-              </el-option>
-            </el-select>
           </el-form-item>
         </el-form>
       </div>
@@ -72,104 +55,30 @@
         v-loading="listLoading"
         border
       >
-        <el-table-column type="expand">
-          <template slot-scope="props">
-            <el-form
-              label-position="left"
-              inline
-              class="demo-table-expand userInfo_expand"
-            >
-              <el-form-item label="First Name：">
-                <span>{{ props.row.userInfo.FirstName }}</span>
-              </el-form-item>
-              <el-form-item label="Last Name：">
-                <span>{{ props.row.userInfo.LastName }}</span>
-              </el-form-item>
-              <el-form-item label="PhoneNo：">
-                <span>{{ props.row.userInfo.PhoneNo }}</span>
-              </el-form-item>
-              <el-form-item label="Email Address：">
-                <span>{{ props.row.userInfo.EmailAddress }}</span>
-              </el-form-item>
-              <el-form-item label="Company Name：">
-                <span>{{ props.row.userInfo.CompanyName }}</span>
-              </el-form-item>
-              <el-form-item label="Address：">
-                <span>{{ props.row.userInfo.Address }}</span>
-              </el-form-item>
-              <el-form-item label="Country：">
-                <span>{{ props.row.userInfo.Country }}</span>
-              </el-form-item>
-              <el-form-item label="Country：">
-                <span>{{ props.row.userInfo.Country }}</span>
-              </el-form-item>
-              <el-form-item label="State：">
-                <span>{{ props.row.userInfo.State }}</span>
-              </el-form-item>
-              <el-form-item label="ZipCode：">
-                <span>{{ props.row.userInfo.ZipCode }}</span>
-              </el-form-item>
-            </el-form>
-            <el-table :data="props.row.carData" class="expandTable" style="width: 100%">
-              <el-table-column label="商品名称" align="center">
-                <template slot-scope="scope">{{ scope.row.productInfo.name }}</template>
-              </el-table-column>
-              <el-table-column label="价格" align="center">
-                <template slot-scope="scope"
-                  >${{ parseFloat(scope.row.productInfo.price).toFixed(2) }}</template
-                >
-              </el-table-column>
-              <el-table-column label="数量" align="center">
-                <template slot-scope="scope">{{ scope.row.nums }}</template>
-              </el-table-column>
-            </el-table>
-          </template>
-        </el-table-column>
-
         <el-table-column type="selection" width="60" align="center"></el-table-column>
         <el-table-column type="index" label="编号" width="50" align="center">
         </el-table-column>
 
-        <el-table-column label="订单编号" align="center">
-          <template slot-scope="scope">{{ scope.row.orderId }}</template>
+        <el-table-column label="姓名" align="center">
+          <template slot-scope="scope">{{ scope.row.Name }}</template>
         </el-table-column>
         <el-table-column label="提交时间" width="180" align="center">
           <template slot-scope="scope">{{
             scope.row.createTime | formatCreateTime
           }}</template>
         </el-table-column>
-        <el-table-column label="用户名" align="center">
-          <template slot-scope="scope">{{ scope.row.username }}</template>
+        <el-table-column label="邮箱" align="center">
+          <template slot-scope="scope">{{ scope.row.Email }}</template>
         </el-table-column>
-        <el-table-column label="订单金额" width="120" align="center">
-          <template slot-scope="scope">${{ scope.row.carData | formatTotla }}</template>
+        <el-table-column label="电话" align="center">
+          <template slot-scope="scope">{{ scope.row.Phone }}</template>
         </el-table-column>
-
-        <el-table-column label="订单状态" width="120" align="center">
+        <el-table-column label="查询类型" align="center">
+          <template slot-scope="scope">{{ scope.row.InquiryType }}</template>
+        </el-table-column>
+        <el-table-column label="留言信息" align="center">
           <template slot-scope="scope">
-            <!-- {{ scope.row.status | formatStatus }} -->
-            <el-select
-              @change="changeStatus($event, scope.$index)"
-              v-model="scope.row.status"
-            >
-              <el-option
-                v-for="item in statusOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              >
-              </el-option>
-            </el-select>
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" width="200" align="center">
-          <template slot-scope="scope">
-            <el-button
-              size="mini"
-              type="danger"
-              @click="handleDeleteOrder(scope.$index, scope.row)"
-              >删除订单</el-button
-            >
+            {{ scope.row.Message }}
           </template>
         </el-table-column>
       </el-table>
@@ -207,7 +116,7 @@
   </div>
 </template>
 <script>
-import { fetchList, updateOrder, deleteOrder } from "@/api/order";
+import { fetchList } from "@/api/contact";
 import { formatDate } from "@/utils/date";
 import LogisticsDialog from "@/views/oms/order/components/logisticsDialog";
 const defaultListQuery = {
@@ -226,9 +135,8 @@ export default {
   data() {
     return {
       listQuery: {
-        orderId: "",
-        status: null,
-        EmailAddress: "",
+        Name: "",
+        Email: "",
       },
       listLoading: true,
       list: null,

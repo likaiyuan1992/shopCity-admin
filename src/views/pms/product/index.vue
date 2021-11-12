@@ -26,8 +26,9 @@
           <el-form-item label="输入搜索：">
             <el-input
               style="width: 203px"
-              v-model="listQuery.keyword"
+              v-model="listQuery.name"
               placeholder="商品名称"
+              clearable
             ></el-input>
           </el-form-item>
           <el-form-item label="商品货号：">
@@ -35,15 +36,20 @@
               style="width: 203px"
               v-model="listQuery.productSn"
               placeholder="商品货号"
+              clearable
             ></el-input>
           </el-form-item>
           <el-form-item label="商品分类：">
-            <el-cascader
-              clearable
-              v-model="selectProductCateValue"
-              :options="productCateOptions"
-            >
-            </el-cascader>
+           <el-select v-model="listQuery.productCategoryCode" clearable placeholder="请选择">
+              <el-option
+                v-for="item in productCateOptions"
+                :key="item.code"
+                :label="item.classifyName"
+                :value="item.code"
+              >
+              </el-option>
+            </el-select>
+           
           </el-form-item>
          
           </el-form-item>
@@ -95,7 +101,7 @@
          <el-table-column label="商品库存" width="100" align="center">
           <template slot-scope="scope">{{ scope.row.stock }}</template>
         </el-table-column>
-         <el-table-column label="商品重量" width="100" align="center">
+         <el-table-column label="商品重量(g)" width="100" align="center">
           <template slot-scope="scope">{{ scope.row.weight }}</template>
         </el-table-column>
         <el-table-column label="排序" width="100" align="center">
@@ -268,7 +274,11 @@ export default {
         },
       ],
       operateType: null,
-      listQuery: Object.assign({}, defaultListQuery),
+      listQuery: {
+        productCategoryCode:'',
+        name:'',
+        productSn: null
+      },
       list: null,
       total: null,
       listLoading: true,
@@ -301,7 +311,7 @@ export default {
   created() {
     this.getList();
     // this.getBrandList();
-    // this.getProductCateList();
+     this.getProductCateList();
   },
   watch: {
     selectProductCateValue: function (newValue) {
@@ -322,6 +332,11 @@ export default {
     },
   },
   methods: {
+    getProductCateList() {
+      fetchListWithChildren().then((response) => {
+        this.productCateOptions = response.data;
+      });
+    },
     getProductSkuSp(row, index) {
       let spData = JSON.parse(row.spData);
       if (spData != null && index < spData.length) {
@@ -347,28 +362,7 @@ export default {
         }
       });
     },
-    getProductCateList() {
-      fetchListWithChildren().then((response) => {
-        let list = response.data;
-        this.productCateOptions = [];
-        for (let i = 0; i < list.length; i++) {
-          let children = [];
-          if (list[i].children != null && list[i].children.length > 0) {
-            for (let j = 0; j < list[i].children.length; j++) {
-              children.push({
-                label: list[i].children[j].name,
-                value: list[i].children[j].id,
-              });
-            }
-          }
-          this.productCateOptions.push({
-            label: list[i].name,
-            value: list[i].id,
-            children: children,
-          });
-        }
-      });
-    },
+   
     handleShowSkuEditDialog(index, row) {
       this.editSkuInfo.dialogVisible = true;
       this.editSkuInfo.productId = row.id;
@@ -514,6 +508,8 @@ export default {
     handleResetSearch() {
       this.selectProductCateValue = [];
       this.listQuery = Object.assign({}, defaultListQuery);
+      this.listQuery.pageNum = 1;
+      this.getList();
     },
     handleDelete(index, row) {
       this.$confirm("是否要进行删除操作?", "提示", {
